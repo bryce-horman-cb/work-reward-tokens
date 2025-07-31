@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --coinbase-blue: #1652F0;
+  --coinbase-blue-dark: #0043CE;
+  --coinbase-blue-light: #F6F8FF;
+  --coinbase-border: #E0E7FF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Coinbase Design System Overrides */
+@layer components {
+  .coinbase-button {
+    @apply bg-[#1652F0] hover:bg-[#0043CE] text-white font-medium rounded-lg transition-all duration-200;
+  }
+  
+  .coinbase-card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700;
+  }
+  
+  .coinbase-input {
+    @apply border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1652F0] focus:border-[#1652F0] transition-all duration-200;
+  }
+}
