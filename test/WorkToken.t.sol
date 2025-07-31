@@ -2,42 +2,42 @@
 pragma solidity ^0.8.19;
 
 import {Test, console} from "forge-std/Test.sol";
-import {BugBountyToken} from "../src/BugBountyToken.sol";
+import {WorkToken} from "../src/WorkToken.sol";
 
-contract BugBountyTokenTest is Test {
-    BugBountyToken public token;
+contract WorkTokenTest is Test {
+    WorkToken public token;
     address public owner;
     address public user;
 
     function setUp() public {
         owner = address(this);
         user = makeAddr("user");
-        token = new BugBountyToken();
+        token = new WorkToken();
     }
 
     function test_InitialState() public {
-        assertEq(token.name(), "Bug Bounty Token");
-        assertEq(token.symbol(), "BBT");
+        assertEq(token.name(), "WORK Coin");
+        assertEq(token.symbol(), "WORK");
         assertEq(token.decimals(), 18);
         assertEq(token.totalSupply(), 0);
         assertEq(token.owner(), owner);
     }
 
     function test_Mint() public {
-        uint256 amount = 1000 * 10**18; // 1000 BBT
-        
+        uint256 amount = 1000 * 10 ** 18; // 1000 WORK
+
         token.mint(user, amount);
-        
+
         assertEq(token.balanceOf(user), amount);
         assertEq(token.totalSupply(), amount);
     }
 
     function test_MintEmitsEvent() public {
-        uint256 amount = 500 * 10**18;
-        
+        uint256 amount = 500 * 10 ** 18;
+
         vm.expectEmit(true, false, false, true);
-        emit BugBountyToken.TokensMinted(user, amount);
-        
+        emit WorkToken.TokensMinted(user, amount);
+
         token.mint(user, amount);
     }
 

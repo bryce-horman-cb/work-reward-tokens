@@ -5,15 +5,14 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * @title BugBountyToken
- * @notice Simple ERC-20 token for bug bounty rewards
+ * @title WorkToken
+ * @notice WORK Coin - Workplace Operations & Response Kudos
  * @dev Minimal implementation for hackathon MVP
  */
-contract BugBountyToken is ERC20, Ownable {
-    
+contract WorkToken is ERC20, Ownable {
     event TokensMinted(address indexed recipient, uint256 amount);
 
-    constructor() ERC20("Bug Bounty Token", "BBT") Ownable(msg.sender) {
+    constructor() ERC20("WORK Coin", "WORK") Ownable(msg.sender) {
         // Initial supply is 0 - tokens are minted on demand
     }
 
@@ -25,7 +24,7 @@ contract BugBountyToken is ERC20, Ownable {
     function mint(address to, uint256 amount) external onlyOwner {
         require(to != address(0), "Cannot mint to zero address");
         require(amount > 0, "Amount must be greater than 0");
-        
+
         _mint(to, amount);
         emit TokensMinted(to, amount);
     }
