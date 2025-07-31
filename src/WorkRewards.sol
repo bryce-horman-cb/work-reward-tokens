@@ -25,6 +25,10 @@ contract WorkRewards is Ownable {
     // Track allowed platforms (platform => allowed)
     mapping(string => bool) public allowedPlatforms;
 
+    // Track all users who have received rewards for leaderboard
+    address[] public allUsers;
+    mapping(address => bool) public isUserRegistered;
+
     event WorkRewarded(address indexed recipient, uint256 amount, string activityId, string platform, string metadata);
 
     event PlatformAdded(string platform);
@@ -70,6 +74,12 @@ contract WorkRewards is Ownable {
         totalTokensEarned[recipient] += amount;
         activitiesByPlatform[platform]++;
 
+        // Register user for leaderboard (only once)
+        if (!isUserRegistered[recipient]) {
+            allUsers.push(recipient);
+            isUserRegistered[recipient] = true;
+        }
+
         // Mint tokens
         token.mint(recipient, amount);
 
@@ -108,6 +118,76 @@ contract WorkRewards is Ownable {
      */
     function getUserStats(address user) external view returns (uint256 activitiesCount, uint256 tokensCount) {
         return (totalActivitiesCompleted[user], totalTokensEarned[user]);
+    }
+
+    /**
+     * @notice Get total number of users who have received rewards
+     * @return count Total number of users
+     */
+    function getTotalUsers() external view returns (uint256 count) {
+        return allUsers.length;
+    }
+
+    /**
+     * @notice Get leaderboard data for all users
+     * @return users Array of user addresses
+     * @return activities Array of total activities for each user
+     * @return tokens Array of total tokens earned for each user
+     */
+    function getLeaderboard() external view returns (
+        address[] memory users,
+        uint256[] memory activities,
+        uint256[] memory tokens
+    ) {
+        uint256 userCount = allUsers.length;
+        users = new address[](userCount);
+        activities = new uint256[](userCount);
+        tokens = new uint256[](userCount);
+
+        for (uint256 i = 0; i < userCount; i++) {
+            address user = allUsers[i];
+            users[i] = user;
+            activities[i] = totalActivitiesCompleted[user];
+            tokens[i] = totalTokensEarned[user];
+        }
+
+        return (users, activities, tokens);
+    }
+
+    /**
+     * @notice Get leaderboard data for a specific range of users
+     * @param offset Starting index
+     * @param limit Maximum number of users to return
+     * @return users Array of user addresses
+     * @return activities Array of total activities for each user
+     * @return tokens Array of total tokens earned for each user
+     */
+    function getLeaderboardPaginated(uint256 offset, uint256 limit) external view returns (
+        address[] memory users,
+        uint256[] memory activities,
+        uint256[] memory tokens
+    ) {
+        uint256 userCount = allUsers.length;
+        require(offset < userCount, "Offset out of bounds");
+
+        uint256 end = offset + limit;
+        if (end > userCount) {
+            end = userCount;
+        }
+
+        uint256 returnCount = end - offset;
+        users = new address[](returnCount);
+        activities = new uint256[](returnCount);
+        tokens = new uint256[](returnCount);
+
+        for (uint256 i = 0; i < returnCount; i++) {
+            address user = allUsers[offset + i];
+            users[i] = user;
+            activities[i] = totalActivitiesCompleted[user];
+            tokens[i] = totalTokensEarned[user];
+        }
+
+        return (users, activities, tokens);
     }
 
     /**
