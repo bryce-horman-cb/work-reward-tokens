@@ -44,6 +44,34 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// Get user by wallet address
+app.get('/users/:wallet_address', async (req, res) => {
+  const { wallet_address } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE wallet_address = $1', [wallet_address]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email address not found' });
+    }
+    return res.json(result.rows[0]);
+  } catch (err) {
+    return res.status(500).json({ error: 'Database error', details: err.message });
+  }
+});
+
+// Get user by email address
+app.get('/users/email/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.json(result.rows[0]);
+  } catch (err) {
+    return res.status(500).json({ error: 'Database error', details: err.message });
+  }
+});
+
 // Health check
 app.get('/', (req, res) => {
   res.send('API is running!');
