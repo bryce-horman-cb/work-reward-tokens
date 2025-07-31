@@ -24,20 +24,20 @@ contract WorkTokenTest is Test {
     }
 
     function test_Mint() public {
-        uint256 amount = 1000 * 10**18; // 1000 WORK
-        
+        uint256 amount = 1000 * 10 ** 18; // 1000 WORK
+
         token.mint(user, amount);
-        
+
         assertEq(token.balanceOf(user), amount);
         assertEq(token.totalSupply(), amount);
     }
 
     function test_MintEmitsEvent() public {
-        uint256 amount = 500 * 10**18;
-        
+        uint256 amount = 500 * 10 ** 18;
+
         vm.expectEmit(true, false, false, true);
         emit WorkToken.TokensMinted(user, amount);
-        
+
         token.mint(user, amount);
     }
 

@@ -10,36 +10,29 @@ import {WorkToken} from "./WorkToken.sol";
  * @dev Extensible design for Jira, GitHub, Slack, and future integrations
  */
 contract WorkRewards is Ownable {
-    
     WorkToken public immutable token;
-    
+
     // Track user statistics
     mapping(address => uint256) public totalActivitiesCompleted;
     mapping(address => uint256) public totalTokensEarned;
-    
+
     // Track processed activities to prevent duplicates (activityId => processed)
     mapping(string => bool) public processedActivities;
-    
+
     // Track activities by platform for analytics (platform => count)
     mapping(string => uint256) public activitiesByPlatform;
-    
+
     // Track allowed platforms (platform => allowed)
     mapping(string => bool) public allowedPlatforms;
-    
-    event WorkRewarded(
-        address indexed recipient,
-        uint256 amount,
-        string activityId,
-        string platform,
-        string metadata
-    );
-    
+
+    event WorkRewarded(address indexed recipient, uint256 amount, string activityId, string platform, string metadata);
+
     event PlatformAdded(string platform);
 
     constructor(address _token) Ownable(msg.sender) {
         require(_token != address(0), "Token address cannot be zero");
         token = WorkToken(_token);
-        
+
         // Initialize default allowed platforms (additional platforms can be added later)
         allowedPlatforms["jira"] = true;
         allowedPlatforms["github"] = true;
@@ -68,18 +61,18 @@ contract WorkRewards is Ownable {
         require(bytes(platform).length > 0, "Platform cannot be empty");
         require(allowedPlatforms[platform], "Platform not allowed");
         require(!processedActivities[activityId], "Activity already processed");
-        
+
         // Mark activity as processed
         processedActivities[activityId] = true;
-        
+
         // Update statistics
         totalActivitiesCompleted[recipient]++;
         totalTokensEarned[recipient] += amount;
         activitiesByPlatform[platform]++;
-        
+
         // Mint tokens
         token.mint(recipient, amount);
-        
+
         emit WorkRewarded(recipient, amount, activityId, platform, metadata);
     }
 
@@ -101,7 +94,7 @@ contract WorkRewards is Ownable {
         require(recipients.length == amounts.length, "Arrays length mismatch");
         require(recipients.length == activityIds.length, "Arrays length mismatch");
         require(recipients.length > 0, "Empty arrays");
-        
+
         for (uint256 i = 0; i < recipients.length; i++) {
             awardTokens(recipients[i], amounts[i], activityIds[i], platform, metadata);
         }
@@ -151,9 +144,8 @@ contract WorkRewards is Ownable {
     function addPlatform(string memory platform) external onlyOwner {
         require(bytes(platform).length > 0, "Platform cannot be empty");
         require(!allowedPlatforms[platform], "Platform already exists");
-        
+
         allowedPlatforms[platform] = true;
         emit PlatformAdded(platform);
     }
-
 }

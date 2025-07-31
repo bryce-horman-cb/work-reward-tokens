@@ -10,7 +10,6 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * @dev Minimal implementation for hackathon MVP
  */
 contract WorkToken is ERC20, Ownable {
-    
     event TokensMinted(address indexed recipient, uint256 amount);
 
     constructor() ERC20("WORK Coin", "WORK") Ownable(msg.sender) {
@@ -25,7 +24,7 @@ contract WorkToken is ERC20, Ownable {
     function mint(address to, uint256 amount) external onlyOwner {
         require(to != address(0), "Cannot mint to zero address");
         require(amount > 0, "Amount must be greater than 0");
-        
+
         _mint(to, amount);
         emit TokensMinted(to, amount);
     }
